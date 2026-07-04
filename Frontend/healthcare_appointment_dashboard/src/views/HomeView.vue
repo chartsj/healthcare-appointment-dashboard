@@ -63,11 +63,11 @@ const count = ref(0)
         </div>
       </div>
       <div class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
-        <h1 class="mt-3 text-4xl font-bold text-slate-900">All Appointment Records</h1>
-        <p class="mt-4 max-w-2xl text-slate-600">View all appointments data and status</p>  
+        <h1 class="mt-3 text-4xl font-bold text-slate-900">Appointment Records</h1>
+        <p class="mt-4 max-w-2xl text-slate-600">View historical and upcoming appointment records, including appointment status.</p>  
         <div class="mt-8"> 
-            <RouterLink to='all-appointments' class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
-                View All Appointments
+            <RouterLink to='appointment-records' class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
+                View Appointment Records
             </RouterLink>
         </div>
       </div>

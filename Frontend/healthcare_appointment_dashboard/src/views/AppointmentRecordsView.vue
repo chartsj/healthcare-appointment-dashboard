@@ -1,5 +1,5 @@
 <template>
-    <main class="min-h-screen bg-slate-50 px-6 py-4">
+    <main class="min-h-screen bg-slate-50 px-6 py-10">
         <div class="mb-6">
             <RouterLink
             to="/"
@@ -9,35 +9,40 @@
             </RouterLink>
         </div>
         <header>
-            <h1 class="text-3xl font-bold text-slate-900">
-            Upcoming Appointments
-            </h1>
-
-            <p class="mt-2 text-slate-600">
-            Appointments scheduled in the next 7 days.
-            </p>
+            <h1 class="text-3xl font-bold text-slate-900">Appointment Records</h1>
+            <p class="mt-2 text-slate-600">View historical and upcoming appointment records, including appointment dates, departments, appointment</p>
         </header>
-        <section class="mt-8 grid gap-4 sm:grid-cols-2">
+        <!-- summary cards -->
+        <!-- <section class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Total Upcoming</p>
+                <p class="text-sm text-slate-500">Total Appointments</p>
                 <p class="mt-2 text-2xl font-bold text-slate-900">12</p>
             </div>
             <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Departments</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">4</p>
+                <p class="text-sm text-slate-500">Scheduled</p>
+                <p class="mt-2 text-2xl font-bold text-slate-900">8</p>
             </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">No Show</p>
+                <p class="mt-2 text-2xl font-bold text-slate-900">1</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">Cancelled</p>
+                <p class="mt-2 text-2xl font-bold text-slate-900">3</p>
+            </div>
+        </section> -->
+        <section>
+            
+            <!-- filter -->
 
-        </section>
-        
-        <section class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div v-if="loading" class="mt-8 rounded-xl bg-white p-6 shadow-sm">
-                Loading appointments...
-            </div>
-            <div v-else-if="error" class="mt-8 rounded-xl bg-white p-6 text-red-600">
-                {{ error }}
-            </div>
+            <!-- table -->
+            <p v-if='loading'>Retrieving appointment records...</p>
+            <p v-else-if='error'>{{error}}</p>
             <div v-else class="overflow-x-auto">
-                <table class="w-full text-left">
+                <p v-if="appointments.length===0">
+                    No appointment records found.
+                </p>
+                <table v-else class="w-full text-left">
                     <thead>
                         <tr>
                             <th>Appointment ID</th>
@@ -63,23 +68,55 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- Pagination here -->
+                <div
+                    v-if="appointments.length > 0"
+                    class="mt-6 flex items-center justify-center gap-3"
+                >
+                    <button
+                    :disabled="currentPage === 1"
+                    @click="goPrevious"
+                    >
+                    Previous
+                    </button>
+
+                    <p>
+                    Page {{ currentPage }} of {{ totalPages }}
+                    </p>
+
+                    <button
+                    :disabled="currentPage === totalPages"
+                    @click="goNext"
+                    >
+                    Next
+                    </button>
+                </div>
+                
             </div>
+
         </section>
     </main>
-
 </template>
-<script setup>
-import {ref, onMounted} from 'vue'
 
-const appointments = ref([])
+<script setup>
+import {ref,onMounted} from 'vue'
+
 const loading = ref(true)
 const error = ref(null)
-
+const appointments=ref([])
 onMounted(async ()=>{
+    loading.value=true
+
     try{
-        //const response = await fetch('http://localhost:3000/api/appointments/upcoming')
-        //appointments.value = response
-        appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
+    //     const response = await fetch('http://localhost:3000/api/appointments?page=1&limit=10')
+
+    //     if (!response.ok) {
+    //     throw new Error('Failed to fetch appointments')
+    //     }
+
+    // const data = await response.json()
+    // appointments.value = data.appointments
+    appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
         appointment_time: '09:30:00',
         department_id: 1,
         appointment_type: 'New Consultation',
@@ -92,12 +129,14 @@ onMounted(async ()=>{
         appointment_status: 'Scheduled',
         created_at: '2025-06-01'}
     ]
+
     }
-    catch (err){
+    catch(err){
         error.value=err
     }
     finally{
         loading.value=false
     }
+
 })
 </script>
