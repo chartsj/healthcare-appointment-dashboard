@@ -1,5 +1,5 @@
 <template>
-    <main class="min-h-screen bg-slate-50 px-6 py-10">
+    <main class="min-h-screen bg-slate-50 px-6 py-6">
         <div class="mb-6">
             <RouterLink
             to="/"
@@ -8,9 +8,11 @@
                 ← Back to Home
             </RouterLink>
         </div>
-        <header>
+        <header class="mb-6">
             <h1 class="text-3xl font-bold text-slate-900">Appointment Records</h1>
-            <p class="mt-2 text-slate-600">View historical and upcoming appointment records, including appointment dates, departments, appointment</p>
+            <p class="mt-2 text-slate-600">
+                View all appointment records, including upcoming and past appointments, sorted by latest appointment date first.
+            </p>
         </header>
         <!-- summary cards -->
         <!-- <section class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -42,26 +44,26 @@
                 <p v-if="appointments.length===0">
                     No appointment records found.
                 </p>
-                <table v-else class="w-full text-left">
-                    <thead>
+                <table v-else class="min-w-full divide-y divide-slate-200 text-left">
+                    <thead class="bg-slate-100">
                         <tr>
-                            <th>Appointment ID</th>
-                            <th>Patient ID</th>
-                            <th>Appointment Date</th>
-                            <th>Appointment Time</th>
-                            <th>Department Name</th>
-                            <th>Appointment Type</th>
-                            <th>Appointment Status</th>
-                            <th>Created At</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Appointment ID</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Patient ID</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Appointment Date</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Appointment Time</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Department Name</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Appointment Type</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Appointment Status</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-700">Created At</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="appointment in appointments" :key="appointment.appointment_id">
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        <tr v-for="appointment in appointments" :key="appointment.appointment_id" class="hover:bg-slate-50">
                             <td class="px-4 py-3">{{appointment.appointment_id}}</td>
                             <td class="px-4 py-3">{{appointment.patient_id}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_date}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_time}}</td>
-                            <td class="px-4 py-3">{{appointment.department_id}}</td>
+                            <td class="px-4 py-3">{{appointment.department_name}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_type}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_status}}</td>
                             <td class="px-4 py-3">{{appointment.created_at}}</td>
@@ -74,19 +76,21 @@
                     class="mt-6 flex items-center justify-center gap-3"
                 >
                     <button
-                    :disabled="currentPage === 1"
+                    :disabled="page === 1"
                     @click="goPrevious"
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
                     >
                     Previous
                     </button>
 
                     <p>
-                    Page {{ currentPage }} of {{ totalPages }}
+                    Page {{ page }} of {{ totalPages }}
                     </p>
 
                     <button
-                    :disabled="currentPage === totalPages"
+                    :disabled="page === totalPages"
                     @click="goNext"
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
                     >
                     Next
                     </button>
@@ -104,31 +108,49 @@ import {ref,onMounted} from 'vue'
 const loading = ref(true)
 const error = ref(null)
 const appointments=ref([])
+const page=ref(1)
+const pageSize=ref(5)
+const totalPages=ref(1)
+const paginationInfo=ref({})
+
+
 onMounted(async ()=>{
-    loading.value=true
+    
+fetchAppointments()
+})
+
+const fetchAppointments=async()=>{
+loading.value=true
 
     try{
-    //     const response = await fetch('http://localhost:3000/api/appointments?page=1&limit=10')
+        const response = await fetch(`http://localhost:8000/appointments?page=${page.value}&page_size=${pageSize.value}`)
+        // 'http://localhost:8000/appointments?page=1&limit=10'
 
-    //     if (!response.ok) {
-    //     throw new Error('Failed to fetch appointments')
-    //     }
+        if (!response.ok) {
+        throw new Error('Failed to fetch appointments')
+        }
 
-    // const data = await response.json()
-    // appointments.value = data.appointments
-    appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
-        appointment_time: '09:30:00',
-        department_id: 1,
-        appointment_type: 'New Consultation',
-        appointment_status: 'Scheduled',
-        created_at: '2025-06-01'},
-        {appointment_id:2,patient_id:2,appointment_date: '2025-06-05',
-        appointment_time: '09:30:00',
-        department_id: 1,
-        appointment_type: 'New Consultation',
-        appointment_status: 'Scheduled',
-        created_at: '2025-06-01'}
-    ]
+        const data = await response.json()
+       
+        appointments.value = data["data"]
+        
+        paginationInfo.value=data["pagination"]
+        
+        totalPages.value=paginationInfo.value["total_pages"]
+      
+    // appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
+    //     appointment_time: '09:30:00',
+    //     department_id: 1,
+    //     appointment_type: 'New Consultation',
+    //     appointment_status: 'Scheduled',
+    //     created_at: '2025-06-01'},
+    //     {appointment_id:2,patient_id:2,appointment_date: '2025-06-05',
+    //     appointment_time: '09:30:00',
+    //     department_id: 1,
+    //     appointment_type: 'New Consultation',
+    //     appointment_status: 'Scheduled',
+    //     created_at: '2025-06-01'}
+    // ]
 
     }
     catch(err){
@@ -137,6 +159,21 @@ onMounted(async ()=>{
     finally{
         loading.value=false
     }
+}
 
-})
+const goNext=async()=>{
+    if (page.value<totalPages.value){
+        page.value++
+        await fetchAppointments()
+    }
+    
+}
+
+const goPrevious=async()=>{
+    if (page.value>1){
+        page.value--
+        await fetchAppointments()
+    }
+    
+}
 </script>

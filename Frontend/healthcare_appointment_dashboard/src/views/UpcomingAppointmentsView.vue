@@ -20,12 +20,12 @@
         <section class="mt-8 grid gap-4 sm:grid-cols-2">
             <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <p class="text-sm text-slate-500">Total Upcoming</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">12</p>
+                <p class="mt-2 text-2xl font-bold text-slate-900">{{ upcomingAppointmentsCount===null?'N/A':upcomingAppointmentsCount }}</p>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <!-- <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <p class="text-sm text-slate-500">Departments</p>
                 <p class="mt-2 text-2xl font-bold text-slate-900">4</p>
-            </div>
+            </div> -->
 
         </section>
         
@@ -37,26 +37,26 @@
                 {{ error }}
             </div>
             <div v-else class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
+                <table class="min-w-full divide-y divide-slate-200 text-left">
+                    <thead class="bg-slate-100 text-slate-700">
                         <tr>
-                            <th>Appointment ID</th>
-                            <th>Patient ID</th>
-                            <th>Appointment Date</th>
-                            <th>Appointment Time</th>
-                            <th>Department Name</th>
-                            <th>Appointment Type</th>
-                            <th>Appointment Status</th>
-                            <th>Created At</th>
+                            <th class="px-4 py-3 font-semibold">Appointment ID</th>
+                            <th class="px-4 py-3 font-semibold">Patient ID</th>
+                            <th class="px-4 py-3 font-semibold">Appointment Date</th>
+                            <th class="px-4 py-3 font-semibold">Appointment Time</th>
+                            <th class="px-4 py-3 font-semibold">Department Name</th>
+                            <th class="px-4 py-3 font-semibold">Appointment Type</th>
+                            <th class="px-4 py-3 font-semibold">Appointment Status</th>
+                            <th class="px-4 py-3 font-semibold">Created At</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="appointment in appointments" :key="appointment.appointment_id">
+                    <tbody class="divide-y divide-slate-200">
+                        <tr class="hover:bg-slate-50" v-for="appointment in appointments" :key="appointment.appointment_id">
                             <td class="px-4 py-3">{{appointment.appointment_id}}</td>
                             <td class="px-4 py-3">{{appointment.patient_id}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_date}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_time}}</td>
-                            <td class="px-4 py-3">{{appointment.department_id}}</td>
+                            <td class="px-4 py-3">{{appointment.department_name}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_type}}</td>
                             <td class="px-4 py-3">{{appointment.appointment_status}}</td>
                             <td class="px-4 py-3">{{appointment.created_at}}</td>
@@ -74,24 +74,32 @@ import {ref, onMounted} from 'vue'
 const appointments = ref([])
 const loading = ref(true)
 const error = ref(null)
-
+const upcomingAppointmentsCount=ref(null)
 onMounted(async ()=>{
     try{
-        //const response = await fetch('http://localhost:3000/api/appointments/upcoming')
-        //appointments.value = response
-        appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
-        appointment_time: '09:30:00',
-        department_id: 1,
-        appointment_type: 'New Consultation',
-        appointment_status: 'Scheduled',
-        created_at: '2025-06-01'},
-        {appointment_id:2,patient_id:2,appointment_date: '2025-06-05',
-        appointment_time: '09:30:00',
-        department_id: 1,
-        appointment_type: 'New Consultation',
-        appointment_status: 'Scheduled',
-        created_at: '2025-06-01'}
-    ]
+        const response = await fetch('http://localhost:8000/appointments/upcoming?days=7')
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        appointments.value = data
+        upcomingAppointmentsCount.value=data.length
+        console.log('length of data:',data.length)
+    //     appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
+    //     appointment_time: '09:30:00',
+    //     department_id: 1,
+    //     appointment_type: 'New Consultation',
+    //     appointment_status: 'Scheduled',
+    //     created_at: '2025-06-01'},
+    //     {appointment_id:2,patient_id:2,appointment_date: '2025-06-05',
+    //     appointment_time: '09:30:00',
+    //     department_id: 1,
+    //     appointment_type: 'New Consultation',
+    //     appointment_status: 'Scheduled',
+    //     created_at: '2025-06-01'}
+    // ]
     }
     catch (err){
         error.value=err

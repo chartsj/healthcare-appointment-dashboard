@@ -30,6 +30,17 @@ const count = ref(0)
         </div>
       </div>
       <div class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+        <h1 class="mt-3 text-4xl font-bold text-slate-900">Create New Appointment</h1>
+        <p class="mt-4 max-w-2xl text-slate-600">
+             Add a new scheduled appointment for an existing patient.
+        </p>
+        <div class="mt-8">
+         <RouterLink to="/appointments/create" class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
+            Create Appointment
+         </RouterLink>
+        </div>
+      </div>
+      <div class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
 
         <h1 class="mt-3 text-4xl font-bold text-slate-900">
           Generate Patient No-Show Risk
@@ -45,7 +56,7 @@ const count = ref(0)
             to="/predict"
             class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
           >
-            Run Predictions
+            Open Prediction Tool
         </RouterLink>
         </div>
       </div>

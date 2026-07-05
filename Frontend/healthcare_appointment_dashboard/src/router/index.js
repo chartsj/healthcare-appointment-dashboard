@@ -4,6 +4,9 @@ import PredictRiskView from '../views/PredictRiskView.vue'
 import UpcomingAppointmentsView from '../views/UpcomingAppointmentsView.vue'
 import UpcomingPredictionResultsView from '../views/UpcomingPredictionResultsView.vue'
 import AppointmentRecordsView from '../views/AppointmentRecordsView.vue'
+import CreateAppointmentView from '../views/CreateAppointmentView.vue'
+
+
 const routes = [
   {
     path: '/',
@@ -29,6 +32,11 @@ const routes = [
     path:'/appointment-records',
     name:'AppointmentRecords',
     component: AppointmentRecordsView
+  },
+  {
+    path:'/appointments/create',
+    name:'CreateAppointment',
+    component: CreateAppointmentView
   }
 ]
 
