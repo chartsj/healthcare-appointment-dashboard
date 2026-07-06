@@ -50,7 +50,29 @@
                     Showing the latest saved prediction for each scheduled appointment in the next 7 days.
                 </p>
             </div>
-            <div class="overflow-x-auto mt-4">
+            <div v-if="predictionResults.length===0"
+            class="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center"
+            >
+                <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                    <span class="text-2xl">📊</span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-slate-900">
+                    No predictions generated yet
+                </h3>
+
+                <p class="mt-2 text-sm text-slate-600">
+                    Please generate no-show risk predictions first to view upcoming appointment risk levels.
+                </p>
+
+                <button
+                    @click="generatePredictions"
+                    class="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                    Generate Predictions
+                </button>
+            </div>
+            <div v-if="predictionResults.length>0" class="overflow-x-auto mt-4">
                 <table class="min-w-full divide-y divide-slate-200">
                     <thead class="bg-slate-50">
                         <tr>
@@ -95,6 +117,10 @@ const errorMessage=ref('')
 const predictionResults=ref([])
 const loading = ref(false)
 const predictionSummary = ref({})
+const isRunning=ref(false)
+const successMessage = ref('')
+const summary = ref({})
+
 const days=7
 
 const fetchPredictionResults = async ()=>{
@@ -131,6 +157,23 @@ onMounted(()=>{
     fetchPredictionResults()
 })
 
+const generatePredictions = async ()=>{
+    console.log("  Generate Predictions button clicked")
+    try {
+        isRunning.value=true
+        const response=await fetch(`http://localhost:8000/no-show-predictions/run?days=${days}`)
+        const results = await response.json()
+        successMessage.value=results["message"]
+        summary.value = results["summary"]
 
+        await fetchPredictionResults()
+    }
+    catch (error) {
+        console.error(error)
+        errorMessage.value = 'Failed to generate predictions.'
+    } finally {
+        isRunning.value = false
+    }
+}
 
 </script>
