@@ -275,6 +275,8 @@ def create_appointment(appointment: AppointmentCreate):
 @app.get("/appointments/upcoming")
 def get_upcoming_appointments(
     days:int=Query(default=7,ge=1,le=30),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=5, ge=1, le=100)
     
 ):
     conn = None
@@ -283,6 +285,17 @@ def get_upcoming_appointments(
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
+        offset = (page - 1) * page_size
+        count_query = """
+            SELECT COUNT(*) AS total
+            FROM appointments
+            WHERE appointment_date BETWEEN CURDATE() AND CURDATE() + INTERVAL %s DAY
+              AND appointment_status = 'Scheduled'
+        """
+
+        cursor.execute(count_query, (days,))
+        total = cursor.fetchone()["total"]
+        total_pages= math.ceil(total/page_size)
         query="""
                 select a.appointment_id,
                 a.patient_id,
@@ -298,10 +311,20 @@ def get_upcoming_appointments(
                 and 
                 a.appointment_date between curdate() and curdate()+interval %s day
                 order by a.appointment_date asc, a.appointment_time asc
+                limit %s offset %s
                 """
-        cursor.execute(query,(days,))
+        cursor.execute(query,(days,page_size,offset))
         appointments=cursor.fetchall()
-        return jsonable_encoder(appointments)
+        
+        return jsonable_encoder({
+            "data": appointments,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": total_pages
+            }
+        })
 
     except mysql.connector.Error as error:
         raise HTTPException(status_code=500, detail=f"Database error: {error}")

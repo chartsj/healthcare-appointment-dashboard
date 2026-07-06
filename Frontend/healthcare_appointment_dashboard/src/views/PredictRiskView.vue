@@ -44,6 +44,31 @@
                     </tr>
                 </tbody>
             </table>
+            <!-- Pagination here -->
+                <div
+                    v-if="upcomingAppointments.length > 0"
+                    class="mt-6 flex items-center justify-center gap-3"
+                >
+                    <button
+                    :disabled="upcomingAppointmentsPagination.page === 1"
+                    @click="goPreviousAppointments"
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+                    >
+                    Previous
+                    </button>
+
+                    <p>
+                    Page {{ upcomingAppointmentsPagination.page }} of {{ upcomingAppointmentsPagination.total_pages }}
+                    </p>
+
+                    <button
+                    :disabled="upcomingAppointmentsPagination.page === upcomingAppointmentsPagination.total_pages"
+                    @click="goNextAppointments "
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+                    >
+                    Next
+                    </button>
+                </div>
             </div>
 
             <p class="mt-4 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500"
@@ -186,6 +211,7 @@ const loading = ref(true)
 const error = ref(null)
 
 const upcomingAppointments=ref([])
+const upcomingAppointmentsPagination=ref({})
 const isRunning=ref(false)
 const days=7
 const summary =ref(null)
@@ -193,23 +219,54 @@ const successMessage=ref('')
 
 const predictions=ref([])
 const errorMessage=ref('')
+const page_size=5
+const pageAppointments = ref(1)
+
 onMounted(async ()=>{
-    try{
-        const response = await fetch(
-            `http://localhost:8000/appointments/upcoming?days=${days}`)
-        
-        
-        const results = await response.json()
-        upcomingAppointments.value=results
-        
-    }
-    catch (err){
-        error.value=err
-    }
-    finally{
-        loading.value=false
-    }
+    fetchUpcomingAppointments()
 })
+
+const fetchUpcomingAppointments = async () => {
+  try {
+    loading.value = true
+    errorMessage.value = ''
+
+    const response = await fetch(
+      `http://localhost:8000/appointments/upcoming?days=${days}&page=${pageAppointments.value}&page_size=${page_size}`
+    )
+
+    const results = await response.json()
+
+    if (!response.ok) {
+      throw new Error(results.detail || 'Failed to fetch upcoming appointments.')
+    }
+
+    upcomingAppointments.value = results.data
+    upcomingAppointmentsPagination.value = results.pagination
+
+    console.log(upcomingAppointments.value)
+  } catch (err) {
+    console.error(err)
+    errorMessage.value = err.message || 'Failed to fetch upcoming appointments.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const goNextAppointments = async () => {
+  if (pageAppointments.value < upcomingAppointmentsPagination.value.total_pages) {
+    pageAppointments.value++
+    await fetchUpcomingAppointments()
+  }
+}
+const goPreviousAppointments = async () => {
+  if (pageAppointments.value  >1) {
+    pageAppointments.value--
+    await fetchUpcomingAppointments()
+  }
+}
+
+
 
 const fetchPredictionResults = async () => {
   const response = await fetch(

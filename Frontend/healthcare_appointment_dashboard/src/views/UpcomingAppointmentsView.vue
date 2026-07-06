@@ -63,6 +63,31 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- Pagination here -->
+                <div
+                    v-if="appointments.length > 0"
+                    class="mt-6 flex items-center justify-center gap-3"
+                >
+                    <button
+                    :disabled="page === 1"
+                    @click="goPreviousAppointments"
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+                    >
+                    Previous
+                    </button>
+
+                    <p>
+                    Page {{ page }} of {{ paginationSummary.total_pages }}
+                    </p>
+
+                    <button
+                    :disabled="page === paginationSummary.total_pages"
+                    @click="goNextAppointments "
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+                    >
+                    Next
+                    </button>
+                </div>
             </div>
         </section>
     </main>
@@ -75,31 +100,25 @@ const appointments = ref([])
 const loading = ref(true)
 const error = ref(null)
 const upcomingAppointmentsCount=ref(null)
-onMounted(async ()=>{
+const page_size=5
+const page=ref(1)
+
+const paginationSummary=ref({})
+
+
+const fetchUpcomingAppointments = async()=>{
     try{
-        const response = await fetch('http://localhost:8000/appointments/upcoming?days=7')
+        const response = await fetch(`http://localhost:8000/appointments/upcoming?days=7&page=${page.value}&page_size=${page_size}`)
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
         }
 
         const data = await response.json()
-        appointments.value = data
-        upcomingAppointmentsCount.value=data.length
-        console.log('length of data:',data.length)
-    //     appointments.value=[{appointment_id:1,patient_id:1,appointment_date: '2025-06-05',
-    //     appointment_time: '09:30:00',
-    //     department_id: 1,
-    //     appointment_type: 'New Consultation',
-    //     appointment_status: 'Scheduled',
-    //     created_at: '2025-06-01'},
-    //     {appointment_id:2,patient_id:2,appointment_date: '2025-06-05',
-    //     appointment_time: '09:30:00',
-    //     department_id: 1,
-    //     appointment_type: 'New Consultation',
-    //     appointment_status: 'Scheduled',
-    //     created_at: '2025-06-01'}
-    // ]
+        appointments.value = data['data']
+        upcomingAppointmentsCount.value=data['pagination']['total']
+        paginationSummary.value = data['pagination']
+
     }
     catch (err){
         error.value=err
@@ -107,5 +126,24 @@ onMounted(async ()=>{
     finally{
         loading.value=false
     }
+}
+onMounted(async ()=>{
+    fetchUpcomingAppointments()
 })
+
+
+const goNextAppointments = async()=>{
+    if (page.value < paginationSummary.value.total_pages) {
+    page.value++
+    await fetchUpcomingAppointments()
+  }
+}
+
+const goPreviousAppointments = async()=>{
+    if (page.value >1) {
+    page.value--
+    await fetchUpcomingAppointments()
+  }
+}
+
 </script>
