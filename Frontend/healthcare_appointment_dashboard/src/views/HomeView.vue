@@ -65,7 +65,7 @@ const count = ref(0)
             Prediction Results
         </h1>
         <p class="mt-4 max-w-2xl text-slate-600">
-            View high, medium, and low risk appointments.
+            View saved no-show risk predictions for scheduled appointments within the next 7 days. 
         </p>
         <div class="mt-8">
             <RouterLink to='prediction-results' class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">

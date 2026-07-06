@@ -137,7 +137,7 @@
                         <tbody class="divide-y divide-slate-200 bg-white">
                             <tr
                             v-for="prediction in predictions"
-                            :key="prediction.appointment_id"
+                            :key="prediction.prediction_id"
                             class="hover:bg-slate-50"
                             >
                                 <td class="px-4 py-3 text-sm text-slate-900">
@@ -167,7 +167,7 @@
                                     {{ prediction.risk_level }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-slate-500">
+                                <td class="px-4 py-3 text-sm text-slate-900">
                                     {{ prediction.predicted_at }}
                                 </td>
                             </tr>
@@ -224,7 +224,7 @@ const fetchPredictionResults = async () => {
   }
 
   predictions.value = results['predictions']
-  console.log("predictions.value: ", predictions.value)
+  
 }
 
 

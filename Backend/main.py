@@ -36,7 +36,7 @@ def home():
     return {"message": "Healthcare API is running"}
 
 @app.get("/no-show-predictions/upcoming")
-def get_upcoming_predictions(days:int=Query(default=7,ge=1,le=30)):
+def get_upcoming_predictions(days:int=Query(default=7,ge=1,le=30)):     
     conn = None
     cursor = None
     try:
@@ -44,7 +44,7 @@ def get_upcoming_predictions(days:int=Query(default=7,ge=1,le=30)):
         cursor = conn.cursor(dictionary=True)
 
         query="""
-                select a.appointment_id, p.patient_id, a.appointment_date,
+                select ap.prediction_id,a.appointment_id, p.patient_id, a.appointment_date,
                 TIME_FORMAT(a.appointment_time, '%H:%i') AS appointment_time, ap.no_show_probability, ap.risk_level, ap.predicted_at
                 from patients p join appointments a on p.patient_id = a.patient_id 
                 join appointment_predictions ap on a.appointment_id = ap.appointment_id
@@ -54,9 +54,24 @@ def get_upcoming_predictions(days:int=Query(default=7,ge=1,le=30)):
                 """
         cursor.execute(query, (days,))
         predictions = cursor.fetchall()
+        summary = {
+            "total_predictions": len(predictions),
+            "high_risk": 0,
+            "medium_risk": 0,
+            "low_risk": 0
+        }
+        for prediction in predictions:
+            if prediction['risk_level']=='High':
+                summary['high_risk']+=1
+            elif prediction['risk_level']=='Medium':
+                summary['medium_risk']+=1
+            elif prediction['risk_level']=='Low':
+                summary['low_risk']+=1
+            
+
         return {
             "days": days,
-            "total": len(predictions),
+            "summary": summary,
             "predictions": predictions
         }
 

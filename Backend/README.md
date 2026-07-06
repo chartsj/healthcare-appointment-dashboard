@@ -10,10 +10,28 @@ First, go into the backend folder:
 cd backend
 ```
 
+Create Python virtual environment:
+```
+python -m venv venv
+```
+
 Activate the virtual environment:
 
 ```bash
 source venv/Scripts/activate
+```
+
+```
+pip install -r requirements.txt
+```
+
+Create .env file
+```
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=your_database_name
 ```
 
 Then run the FastAPI server:
