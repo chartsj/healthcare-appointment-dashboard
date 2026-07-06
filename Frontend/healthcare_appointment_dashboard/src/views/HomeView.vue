@@ -18,6 +18,15 @@ const count = ref(0)
                 and generate no-show risk predictions.
             </p>
         </div>
+      <div id="appointment-records" class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+        <h1 class="mt-3 text-4xl font-bold text-slate-900">Appointment Records</h1>
+        <p class="mt-4 max-w-2xl text-slate-600">View historical and upcoming appointment records, including appointment status.</p>  
+        <div class="mt-8"> 
+            <RouterLink to='appointment-records' class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
+                View Appointment Records
+            </RouterLink>
+        </div>
+      </div>
       <div id="create-appointment" class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
         <h1 class="mt-3 text-4xl font-bold text-slate-900">Create New Appointment</h1>
         <p class="mt-4 max-w-2xl text-slate-600">
@@ -29,15 +38,7 @@ const count = ref(0)
          </RouterLink>
         </div>
       </div>
-      <div id="appointment-records" class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
-        <h1 class="mt-3 text-4xl font-bold text-slate-900">Appointment Records</h1>
-        <p class="mt-4 max-w-2xl text-slate-600">View historical and upcoming appointment records, including appointment status.</p>  
-        <div class="mt-8"> 
-            <RouterLink to='appointment-records' class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
-                View Appointment Records
-            </RouterLink>
-        </div>
-      </div>
+      
       <div id="upcoming-appointments" class="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
         <h1 class="mt-3 text-4xl font-bold text-slate-900">Upcoming Appointments</h1>
         <p class="mt-4 max-w-2xl text-slate-600">
