@@ -2,7 +2,7 @@
     <main class="min-h-screen bg-slate-50 px-6 py-6">
         <div class="mb-6">
             <RouterLink
-            to="/"
+            to="/#appointment-records"
             class="mb-6 text-sm font-medium text-blue-600 hover:underline"
             >
                 ← Back to Home
@@ -11,28 +11,9 @@
         <header class="mb-6">
             <h1 class="text-3xl font-bold text-slate-900">Appointment Records</h1>
             <p class="mt-2 text-slate-600">
-                View all appointment records, including upcoming and past appointments, sorted by latest appointment date first.
+                View all appointment records, including upcoming and past appointments, sorted by most recently created.
             </p>
         </header>
-        <!-- summary cards -->
-        <!-- <section class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Total Appointments</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">12</p>
-            </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Scheduled</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">8</p>
-            </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">No Show</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">1</p>
-            </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Cancelled</p>
-                <p class="mt-2 text-2xl font-bold text-slate-900">3</p>
-            </div>
-        </section> -->
         <section>
             
             <!-- filter -->
@@ -124,7 +105,7 @@ loading.value=true
 
     try{
         const response = await fetch(`http://localhost:8000/appointments?page=${page.value}&page_size=${pageSize.value}`)
-        // 'http://localhost:8000/appointments?page=1&limit=10'
+    
 
         if (!response.ok) {
         throw new Error('Failed to fetch appointments')

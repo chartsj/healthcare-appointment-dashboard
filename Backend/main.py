@@ -114,7 +114,7 @@ def run_no_show_predictions(
                     SELECT COUNT(*)
                     FROM appointments past
                     WHERE past.patient_id = a.patient_id
-                      AND past.appointment_status = 'No-Show'
+                      AND past.appointment_status = 'No Show'
                       AND past.appointment_date < a.appointment_date
                 ) AS past_no_show_count
             FROM appointments a
@@ -310,7 +310,7 @@ def get_upcoming_appointments(
                 where a.appointment_status='Scheduled' 
                 and 
                 a.appointment_date between curdate() and curdate()+interval %s day
-                order by a.appointment_date asc, a.appointment_time asc
+                order by a.created_at desc
                 limit %s offset %s
                 """
         cursor.execute(query,(days,page_size,offset))
@@ -364,7 +364,7 @@ def get_appointments(
             TIME_FORMAT(a.appointment_time, '%H:%i') AS appointment_time,
             d.department_name, a.appointment_type, a.appointment_status, a.created_at
             FROM appointments a join departments d on a.department_id=d.department_id
-            order by a.appointment_date desc, a.appointment_time desc
+            order by a.created_at desc
             limit %s offset %s
             ;
             

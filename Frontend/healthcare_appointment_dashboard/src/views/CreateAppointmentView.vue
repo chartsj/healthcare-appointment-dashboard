@@ -2,7 +2,7 @@
     <main class="min-h-screen bg-slate-50 px-6 py-4">
         <div class="mb-6">
             <RouterLink
-            to="/"
+            to="/#create-appointment"
             class="mb-6 text-sm font-medium text-blue-600 hover:underline"
             >
                 ← Back to Home

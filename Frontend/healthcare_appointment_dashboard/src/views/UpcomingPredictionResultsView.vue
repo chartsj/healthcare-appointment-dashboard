@@ -3,7 +3,7 @@
     <main class="min-h-screen bg-slate-50 px-6 py-6">
         <div class="mb-6">
             <RouterLink
-            to="/"
+            to="/#prediction-results"
             class="mb-6 text-sm font-medium text-blue-600 hover:underline"
             >
                 ← Back to Home
